@@ -19,7 +19,7 @@ public:
 	mongoc_client_t* getClient();
 
 
-	bool InsertDoc(const char*db, const char*tb, const bson_t *doc);
+	bool InsertDoc(const char*db, const char*tb, const bson_t *document, const bson_t *opts = nullptr, bson_t *reply = nullptr, size_t n_documents = 0, bool isMany = false);
 	mongoc_cursor_t* SearchDocs(const char*db, const char*tb, const bson_t *cond, bool& bResult, unsigned int skip, unsigned int limit, unsigned int batch_size, const bson_t *fields);
 	bool UpdateDoc(const char*db, const char*coll, const bson_t *cond, const bson_t *updatedoc, bool isUpSert = false);
 	bool DeleteDoc(const char*db, const char*coll, const bson_t *cond, bool isAll = false);

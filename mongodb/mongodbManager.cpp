@@ -21,16 +21,22 @@ mongoc_client_t* CMongodbConnection::getClient()
        return nullptr;	
 }
 
-bool CMongodbConnection::InsertDoc(const char*db, const char*tb, const bson_t *doc)
+bool CMongodbConnection::InsertDoc(const char*db, const char*tb, const bson_t *document,const bson_t *opts, bson_t *reply, size_t n_documents, bool isMany)
 {
 	mongoc_collection_t *collection = mongoc_client_get_collection(m_pClient, db, tb);
-       	if(nullptr == collection)
-       	{
- 		return false;
-       	}	       
-	if (!mongoc_collection_insert(collection, MONGOC_INSERT_NONE, doc, nullptr, &m_Error_t))
+    if(nullptr == collection)
+    {
+ 	return false;
+    }
+
+	int nRet = 0;
+	if (isMany)
+		nRet = mongoc_collection_insert_many(collection, &document, n_documents, opts, reply, &m_Error_t);
+	else
+		nRet = mongoc_collection_insert_one(collection, document, opts, reply, &m_Error_t);
+	if (!nRet)
 	{
-		char *docStr = bson_as_json(doc, nullptr);
+		char *docStr = bson_as_json(document, nullptr);
 		bson_free(docStr);
 		mongoc_collection_destroy(collection);
 		return false;
